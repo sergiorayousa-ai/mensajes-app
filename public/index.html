@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📱 Gestor de Mensajes - Sky View Mark+</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .client-id {
+      background: #f0f0f0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border: 2px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      color: #666;
+    }
+
+    .tab-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .tab-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      transition: border 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .btn-success {
+      background: #27ae60;
+    }
+
+    .btn-success:hover {
+      background: #229954;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .contacts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .contact-card {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .contact-info {
+      flex: 1;
+    }
+
+    .contact-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 13px;
+    }
+
+    .contact-phone {
+      font-size: 12px;
+      color: #666;
+      margin-top: 3px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .msg-preview {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+      margin: 15px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+
+    .templates-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .template-item {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .template-info {
+      flex: 1;
+    }
+
+    .template-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 13px;
+    }
+
+    .template-type {
+      font-size: 12px;
+      color: #666;
+      margin-top: 3px;
+    }
+
+    .whatsapp-links {
+      background: #d4f8d4;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #c3e6cb;
+      margin-top: 15px;
+    }
+
+    .whatsapp-link {
+      display: inline-block;
+      background: #25d366;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 5px 5px 5px 0;
+      transition: all 0.3s;
+    }
+
+    .whatsapp-link:hover {
+      background: #20ba58;
+      transform: translateY(-2px);
+    }
+
+    .menu-item {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu-info {
+      flex: 1;
+    }
+
+    .menu-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 13px;
+    }
+
+    .menu-price {
+      color: #27ae60;
+      font-weight: 700;
+      font-size: 14px;
+      margin-top: 3px;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .counter {
+      background: #667eea;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>📱 Gestor de Mensajes</h1>
+      <small style="color: #666;">Sky View Mark+ 2024</small>
+    </div>
+    <div class="client-id">
+      ID: <span id="clientIdDisplay">Generando...</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('info')">📍 Negocio</button>
+    <button class="tab-btn" onclick="switchTab('contacts')">👥 Contactos <span class="counter" id="contactCount">0</span></button>
+    <button class="tab-btn" onclick="switchTab('send')">💬 Enviar</button>
+    <button class="tab-btn" onclick="switchTab('templates')">📋 Plantillas</button>
+    <button class="tab-btn" onclick="switchTab('menu')">🍽️ Menú</button>
+    <button class="tab-btn" onclick="switchTab('stats')">📊 Estadísticas</button>
+  </div>
+
+  <!-- TAB: INFORMACIÓN DEL NEGOCIO -->
+  <div id="info" class="tab-content active">
+    <div class="card">
+      <h2>📍 Información del Restaurante/Negocio</h2>
+      
+      <div class="form-group">
+        <label>Nombre del Negocio</label>
+        <input type="text" id="businessName" placeholder="Ej: Latin Roots Chicago">
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Dirección</label>
+          <input type="text" id="address" placeholder="Ej: 123 S. Halsted St, Chicago">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" id="phone" placeholder="+1 (312) 555-1234">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Horarios (Lunes-Viernes)</label>
+          <input type="text" id="scheduleWeek" placeholder="10:00 AM - 9:00 PM">
+        </div>
+        <div class="form-group">
+          <label>Horarios (Sábado-Domingo)</label>
+          <input type="text" id="scheduleWeekend" placeholder="11:00 AM - 10:00 PM">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="contacto@negocio.com">
+      </div>
+
+      <button onclick="saveBusinessInfo()">💾 Guardar Información</button>
+      <div id="infoStatus"></div>
+    </div>
+  </div>
+
+  <!-- TAB: CONTACTOS -->
+  <div id="contacts" class="tab-content">
+    <div class="card">
+      <h2>👥 Importar Contactos</h2>
+      
+      <div class="alert alert-info">
+        📝 Pega datos desde tu teléfono o CRM. Formato: Nombre, +1234567890, WhatsApp/SMS
+      </div>
+
+      <div class="form-group">
+        <label>Importar Contactos</label>
+        <textarea id="importData" placeholder="Juan García, +1 (312) 555-1234, WhatsApp&#10;María López, +1 (312) 555-5678, SMS&#10;..."></textarea>
+        <small style="color: #666; display: block; margin-top: 6px;">Un contacto por línea: Nombre, Número, Plataforma</small>
+      </div>
+
+      <button onclick="importContacts()">➕ Importar Contactos</button>
+      <button class="btn-secondary" onclick="exportContacts()" style="margin-left: 10px;">📥 Descargar Excel</button>
+      <div id="importStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Tus Contactos (<span id="contactCountDetail">0</span>)</h2>
+      <input type="text" id="searchContacts" placeholder="🔍 Buscar contactos..." style="margin-bottom: 15px;">
+      <div id="contactsList" class="contacts-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ENVIAR MENSAJES -->
+  <div id="send" class="tab-content">
+    <div class="card">
+      <h2>💬 Enviar Actualización a Clientes</h2>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Tipo de Mensaje</label>
+          <select id="messageType" onchange="updateMessageTemplate()">
+            <option value="custom">Mensaje Personalizado</option>
+            <option value="hours">Actualizar Horarios</option>
+            <option value="location">Cambio de Ubicación</option>
+            <option value="menu">Nueva Actualización de Menú</option>
+            <option value="promotion">Promoción / Oferta</option>
+            <option value="thanks">Agradecimiento</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Enviar a:</label>
+          <select id="targetPlatform">
+            <option value="all">Todos (WhatsApp y SMS)</option>
+            <option value="whatsapp">Solo WhatsApp</option>
+            <option value="sms">Solo SMS</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mensaje</label>
+        <textarea id="messageText" placeholder="Escribe tu mensaje aquí..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+          <input type="checkbox" id="includeInfo" checked>
+          Incluir información del negocio (dirección, horarios, teléfono)
+        </label>
+      </div>
+
+      <h3 style="font-size: 14px; margin: 20px 0 12px; font-weight: 600; color: #333;">Vista previa:</h3>
+      <div id="messagePreview" class="msg-preview">Tu mensaje aparecerá aquí...</div>
+
+      <button onclick="sendMessages()" style="width: 100%; padding: 14px; font-size: 14px; background: #27ae60;">
+        📤 Enviar a <span id="sendCount">0</span> contactos
+      </button>
+
+      <div id="sendStatus"></div>
+
+      <div id="whatsappLinks" class="whatsapp-links" style="display: none;">
+        <h3 style="font-size: 13px; margin-bottom: 10px; color: #155724;">✓ Haz clic para enviar por WhatsApp:</h3>
+        <div id="whatsappLinksList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: PLANTILLAS PERSONALIZADAS -->
+  <div id="templates" class="tab-content">
+    <div class="card">
+      <h2>📋 Crear Plantilla</h2>
+
+      <div class="form-group">
+        <label>Nombre de la Plantilla</label>
+        <input type="text" id="templateName" placeholder="Ej: Promoción Especial">
+      </div>
+
+      <div class="form-group">
+        <label>Contenido</label>
+        <textarea id="templateContent" placeholder="Escribe la plantilla aquí..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="templateType">
+          <option value="general">General</option>
+          <option value="promotion">Promoción</option>
+          <option value="event">Evento</option>
+          <option value="announcement">Anuncio</option>
+        </select>
+      </div>
+
+      <button onclick="saveTemplate()">💾 Guardar Plantilla</button>
+      <div id="templateStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>📚 Tus Plantillas (<span id="templateCount">0</span>)</h2>
+      <div id="templatesList" class="templates-list"></div>
+    </div>
+  </div>
+
+  <!-- TAB: MENÚ -->
+  <div id="menu" class="tab-content">
+    <div class="card">
+      <h2>➕ Agregar Plato al Menú</h2>
+
+      <div class="form-group">
+        <label>Nombre del Plato</label>
+        <input type="text" id="dishName" placeholder="Ej: Empanadas de Carne">
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Precio</label>
+          <input type="number" id="dishPrice" placeholder="5.50" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Descripción Breve</label>
+          <input type="text" id="dishDesc" placeholder="Relleno de carne y especias">
+        </div>
+      </div>
+
+      <button onclick="addDish()">➕ Agregar Plato</button>
+      <div id="dishStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>🍽️ Tu Menú (<span id="menuCount">0</span> platos)</h2>
+      <div id="menuList" style="display: grid; gap: 10px;"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ESTADÍSTICAS -->
+  <div id="stats" class="tab-content">
+    <div class="card">
+      <h2>📊 Resumen de Uso</h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="statTotalMessages">0</div>
+          <div class="stat-label">Mensajes Enviados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statRemaining">100</div>
+          <div class="stat-label">Gratis Disponibles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statPaid">0</div>
+          <div class="stat-label">Mensajes Pagos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">$<span id="statCost">0</span></div>
+          <div class="stat-label">Costo Estimado</div>
+        </div>
+      </div>
+
+      <div style="background: #f9f9f9; padding: 15px; border-radius: 6px; margin-top: 20px;">
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: #333;">💡 Modelo de Precios</h3>
+        <ul style="font-size: 13px; color: #666; line-height: 1.8;">
+          <li>✓ <strong>100 mensajes GRATIS</strong> cada mes</li>
+          <li>✓ Después: $0.05 por mensaje adicional (Twilio)</li>
+          <li>✓ Los clientes pueden enviar desde su teléfono (gratis)</li>
+          <li>✓ Soporte y actualizaciones incluidas</li>
+        </ul>
+      </div>
+
+      <button class="btn-secondary" onclick="loadStats()" style="margin-top: 15px; width: 100%;">🔄 Actualizar Estadísticas</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let clientId = localStorage.getItem('clientId');
+  let contacts = [];
+  let templates = [];
+  let menu = [];
+  let businessInfo = {};
+
+  // Generar ID único del cliente si no existe
+  if (!clientId) {
+    clientId = 'cli_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('clientId', clientId);
+  }
+
+  document.getElementById('clientIdDisplay').textContent = clientId;
+
+  // ====== FUNCIONES GENERALES ======
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ====== INFORMACIÓN DEL NEGOCIO ======
+  async function saveBusinessInfo() {
+    businessInfo = {
+      name: document.getElementById('businessName').value,
+      address: document.getElementById('address').value,
+      phone: document.getElementById('phone').value,
+      scheduleWeek: document.getElementById('scheduleWeek').value,
+      scheduleWeekend: document.getElementById('scheduleWeekend').value,
+      email: document.getElementById('email').value
+    };
+
+    try {
+      const response = await fetch(`/api/business-info`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, ...businessInfo })
+      });
+
+      if (response.ok) {
+        showStatus('infoStatus', '✓ Información guardada correctamente', 'success');
+      }
+    } catch (e) {
+      showStatus('infoStatus', 'Error guardando información (se guardó localmente)', 'warning');
+      localStorage.setItem('businessInfo', JSON.stringify(businessInfo));
+    }
+  }
+
+  // ====== CONTACTOS ======
+  async function importContacts() {
+    const data = document.getElementById('importData').value.trim();
+    if (!data) return alert('Ingresa datos de contactos');
+
+    const lines = data.split('\n').filter(l => l.trim());
+    const newContacts = [];
+
+    lines.forEach(line => {
+      const [name, phone, platform] = line.split(',').map(s => s.trim());
+      if (name && phone) {
+        newContacts.push({
+          id: Date.now() + Math.random(),
+          name,
+          phone,
+          platform: platform || 'WhatsApp',
+          addedAt: new Date().toLocaleDateString()
+        });
+      }
+    });
+
+    contacts = [...contacts, ...newContacts];
+
+    try {
+      await fetch(`/api/contacts/${clientId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contacts })
+      });
+    } catch {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+    }
+
+    document.getElementById('importData').value = '';
+    updateContactCount();
+    renderContacts();
+    showStatus('importStatus', `✓ ${newContacts.length} contacto(s) importado(s)`, 'success');
+  }
+
+  function updateContactCount() {
+    document.getElementById('contactCount').textContent = contacts.length;
+    document.getElementById('contactCountDetail').textContent = contacts.length;
+    document.getElementById('sendCount').textContent = contacts.length;
+  }
+
+  function renderContacts() {
+    const searchTerm = (document.getElementById('searchContacts')?.value || '').toLowerCase();
+    const filtered = contacts.filter(c => 
+      c.name.toLowerCase().includes(searchTerm) || c.phone.includes(searchTerm)
+    );
+
+    const list = document.getElementById('contactsList');
+    list.innerHTML = filtered.map(c => `
+      <div class="contact-card">
+        <div class="contact-info">
+          <div class="contact-name">${c.name}</div>
+          <div class="contact-phone">${c.phone}</div>
+          <div class="badge">${c.platform}</div>
+        </div>
+        <button class="btn-danger" onclick="deleteContact('${c.id}')" style="padding: 6px 10px; font-size: 12px;">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function deleteContact(id) {
+    if (confirm('¿Eliminar este contacto?')) {
+      contacts = contacts.filter(c => c.id != id);
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+      updateContactCount();
+      renderContacts();
+    }
+  }
+
+  async function exportContacts() {
+    if (contacts.length === 0) return alert('No hay contactos para exportar');
+
+    try {
+      const response = await fetch(`/api/export-excel/${clientId}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contactos_${new Date().getTime()}.csv`;
+      a.click();
+    } catch {
+      // Fallback: generar CSV localmente
+      let csv = 'Nombre,Teléfono,Plataforma,Fecha\n';
+      contacts.forEach(c => {
+        csv += `"${c.name}","${c.phone}","${c.platform}","${c.addedAt}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contactos_${new Date().getTime()}.csv`;
+      a.click();
+    }
+  }
+
+  // ====== MENSAJES ======
+  function updateMessageTemplate() {
+    const type = document.getElementById('messageType').value;
+    const templates = {
+      hours: `¡Hola! 👋\n\nTe compartimos nuestros horarios:\n\n📅 Lunes a Viernes: ${businessInfo.scheduleWeek || '10:00 AM - 9:00 PM'}\n📅 Sábado y Domingo: ${businessInfo.scheduleWeekend || '11:00 AM - 10:00 PM'}\n\n¡Esperamos tu visita! 🙌`,
+      location: `¡Atención! 📍\n\nHemos cambiado de ubicación.\n\nNueva dirección:\n${businessInfo.address || 'Por confirmar'}\n\n¡Ven a visitarnos! 🎉`,
+      menu: `¡Novedad en nuestro menú! 🍽️\n\nTenemos deliciosas nuevas opciones esperándote.\n\n¡Ven a probar pronto! 😋`,
+      promotion: `¡OFERTA ESPECIAL! 🎉\n\nSolo para ti, descuentos y promociones exclusivas.\n\n¡No te lo pierdas! 🔥`,
+      thanks: `¡Gracias! 🙏\n\nAppreciamos tu confianza y apoyo.\n\n¡Nos vemos pronto! 💪`,
+      custom: ''
+    };
+    document.getElementById('messageText').value = templates[type] || '';
+    updateMessagePreview();
+  }
+
+  function updateMessagePreview() {
+    let msg = document.getElementById('messageText').value;
+
+    if (document.getElementById('includeInfo').checked && businessInfo.name) {
+      msg += `\n\n━━━━━━━━━━━━━━━━\n${businessInfo.name}`;
+      if (businessInfo.address) msg += `\n📍 ${businessInfo.address}`;
+      if (businessInfo.phone) msg += `\n☎️ ${businessInfo.phone}`;
+      if (businessInfo.scheduleWeek) msg += `\n🕐 ${businessInfo.scheduleWeek}`;
+    }
+
+    document.getElementById('messagePreview').textContent = msg || 'Tu mensaje aparecerá aquí...';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('messageText').addEventListener('input', updateMessagePreview);
+    document.getElementById('includeInfo').addEventListener('change', updateMessagePreview);
+    document.getElementById('searchContacts').addEventListener('input', renderContacts);
+  });
+
+  async function sendMessages() {
+    const msg = document.getElementById('messageText').value.trim();
+    if (!msg) return alert('Escribe un mensaje');
+    if (contacts.length === 0) return alert('No hay contactos para enviar');
+
+    const platform = document.getElementById('targetPlatform').value;
+    const filtered = platform === 'all' ? contacts : contacts.filter(c => c.platform.toLowerCase().includes(platform));
+
+    if (filtered.length === 0) return alert(`No hay contactos de ${platform}`);
+
+    const status = document.getElementById('sendStatus');
+    status.innerHTML = '<div class="status warning">⏳ Preparando mensajes...</div>';
+
+    try {
+      const response = await fetch(`/api/send-message/${clientId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contacts: filtered, message: msg, platform })
+      });
+
+      const result = await response.json();
+
+      if (result.whatsappLinks && result.whatsappLinks.length > 0) {
+        const linksHtml = result.whatsappLinks.map(link =>
+          `<a href="${link.link}" target="_blank" class="whatsapp-link">📱 ${link.name}</a>`
+        ).join('');
+
+        document.getElementById('whatsappLinksList').innerHTML = linksHtml;
+        document.getElementById('whatsappLinks').style.display = 'block';
+      }
+
+      status.innerHTML = `<div class="status success">
+        ✓ ${result.messagesSent} mensajes listos para enviar
+        <br><small>Total enviados: ${result.totalSent} | Gratis restantes: ${result.remainingFree}</small>
+      </div>`;
+
+      loadStats();
+    } catch (e) {
+      status.innerHTML = '<div class="status error">⚠️ Error en el envío (pero se registró localmente)</div>';
+    }
+  }
+
+  // ====== PLANTILLAS ======
+  async function saveTemplate() {
+    const name = document.getElementById('templateName').value.trim();
+    const content = document.getElementById('templateContent').value.trim();
+    const type = document.getElementById('templateType').value;
+
+    if (!name || !content) return alert('Completa nombre y contenido');
+
+    const template = {
+      id: Date.now().toString(),
+      name,
+      content,
+      type,
+      createdAt: new Date()
+    };
+
+    templates.push(template);
+
+    try {
+      await fetch(`/api/templates/${clientId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(template)
+      });
+    } catch {
+      localStorage.setItem('templates', JSON.stringify(templates));
+    }
+
+    document.getElementById('templateName').value = '';
+    document.getElementById('templateContent').value = '';
+    document.getElementById('templateType').value = 'general';
+
+    renderTemplates();
+    showStatus('templateStatus', '✓ Plantilla guardada', 'success');
+  }
+
+  function renderTemplates() {
+    const list = document.getElementById('templatesList');
+    document.getElementById('templateCount').textContent = templates.length;
+
+    list.innerHTML = templates.map(t => `
+      <div class="template-item">
+        <div class="template-info">
+          <div class="template-name">${t.name}</div>
+          <div class="template-type">${t.type}</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary" onclick="useTemplate('${t.id}')" style="padding: 6px 10px; font-size: 12px;">Usar</button>
+          <button class="btn-danger" onclick="deleteTemplate('${t.id}')" style="padding: 6px 10px; font-size: 12px;">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function useTemplate(id) {
+    const template = templates.find(t => t.id === id);
+    if (template) {
+      document.getElementById('messageText').value = template.content;
+      document.getElementById('messageType').value = 'custom';
+      updateMessagePreview();
+      switchTab('send');
+    }
+  }
+
+  function deleteTemplate(id) {
+    if (confirm('¿Eliminar esta plantilla?')) {
+      templates = templates.filter(t => t.id !== id);
+      localStorage.setItem('templates', JSON.stringify(templates));
+      renderTemplates();
+    }
+  }
+
+  // ====== MENÚ ======
+  async function addDish() {
+    const name = document.getElementById('dishName').value.trim();
+    const price = parseFloat(document.getElementById('dishPrice').value);
+    const desc = document.getElementById('dishDesc').value.trim();
+
+    if (!name || !price) return alert('Completa nombre y precio');
+
+    const dish = { id: Date.now(), name, price, desc };
+    menu.push(dish);
+
+    try {
+      await fetch(`/api/menu/${clientId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ menu })
+      });
+    } catch {
+      localStorage.setItem('menu', JSON.stringify(menu));
+    }
+
+    document.getElementById('dishName').value = '';
+    document.getElementById('dishPrice').value = '';
+    document.getElementById('dishDesc').value = '';
+
+    renderMenu();
+    showStatus('dishStatus', '✓ Plato agregado', 'success');
+  }
+
+  function renderMenu() {
+    const list = document.getElementById('menuList');
+    document.getElementById('menuCount').textContent = menu.length;
+
+    list.innerHTML = menu.map(d => `
+      <div class="menu-item">
+        <div class="menu-info">
+          <div class="menu-name">${d.name}</div>
+          <div style="font-size: 12px; color: #666;">${d.desc}</div>
+          <div class="menu-price">$${d.price.toFixed(2)}</div>
+        </div>
+        <button class="btn-danger" onclick="deleteDish('${d.id}')" style="padding: 6px 10px; font-size: 12px;">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function deleteDish(id) {
+    if (confirm('¿Eliminar este plato?')) {
+      menu = menu.filter(d => d.id != id);
+      localStorage.setItem('menu', JSON.stringify(menu));
+      renderMenu();
+    }
+  }
+
+  // ====== ESTADÍSTICAS ======
+  async function loadStats() {
+    try {
+      const response = await fetch(`/api/stats/${clientId}`);
+      const stats = await response.json();
+
+      document.getElementById('statTotalMessages').textContent = stats.totalMessages;
+      document.getElementById('statRemaining').textContent = Math.max(0, stats.remainingFree);
+      document.getElementById('statPaid').textContent = stats.paidMessages;
+      document.getElementById('statCost').textContent = stats.estimatedCost.toFixed(2);
+    } catch {
+      console.log('Error cargando estadísticas');
+    }
+  }
+
+  // ====== UTILIDADES ======
+  function showStatus(elementId, message, type) {
+    const el = document.getElementById(elementId);
+    el.innerHTML = `<div class="status ${type}">${message}</div>`;
+    setTimeout(() => el.innerHTML = '', 3000);
+  }
+
+  // ====== INICIALIZACIÓN ======
+  function init() {
+    contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+    templates = JSON.parse(localStorage.getItem('templates')) || [];
+    menu = JSON.parse(localStorage.getItem('menu')) || [];
+    businessInfo = JSON.parse(localStorage.getItem('businessInfo')) || {};
+
+    // Cargar datos guardados
+    if (businessInfo.name) document.getElementById('businessName').value = businessInfo.name;
+    if (businessInfo.address) document.getElementById('address').value = businessInfo.address;
+    if (businessInfo.phone) document.getElementById('phone').value = businessInfo.phone;
+    if (businessInfo.scheduleWeek) document.getElementById('scheduleWeek').value = businessInfo.scheduleWeek;
+    if (businessInfo.scheduleWeekend) document.getElementById('scheduleWeekend').value = businessInfo.scheduleWeekend;
+    if (businessInfo.email) document.getElementById('email').value = businessInfo.email;
+
+    updateContactCount();
+    renderContacts();
+    renderTemplates();
+    renderMenu();
+    loadStats();
+  }
+
+  window.addEventListener('load', init);
+</script>
+
+</body>
+</html>
